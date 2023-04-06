@@ -3,11 +3,10 @@ const { appointmentModel } = require("../models/AppointmentModel");
 const appointmentRouter = Router();
 
 appointmentRouter.get("/get", async (req, res) => {
-  const specialization = req.query;
-  const name = req.query;
-  const { limit, sort, page } = req.query;
+  const { limit, sort, page, specialization, name } = req.query;
+  console.log(specialization);
   try {
-    if (specialization && name) {
+    if (!specialization && !name) {
       const data = await appointmentModel
         .find()
         .limit(limit)
@@ -15,9 +14,7 @@ appointmentRouter.get("/get", async (req, res) => {
       res.send({ data: data });
     } else {
       const data = await appointmentModel
-        .find({
-          $or: [specialization, name],
-        })
+        .find({ $or: [{ specialization: specialization }, { name: name }] })
         .limit(limit)
         .skip((page - 1) * limit);
       res.send({ data: data });
